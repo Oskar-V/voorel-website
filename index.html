@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en" data-theme="light">
+	<head>
+		<title>Voorel</title>
+		<meta charset="UTF-8" />
+		<link rel="icon" href="./media/favicon.ico" />
+		<link rel="apple-touch-icon" href="./media/favicon.ico" />
+		<link rel="manifest" href="manifest.json" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, user-scalable=0"
+		/>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta name="theme-color" content="#000000" />
+		<meta name="description" content="A website" />
+		<meta name="og:title" content="Voorel" />
+		<meta name="og:type" content="website" />
+		<meta name="og:image:secure_url" content="./media/favicon.png" />
+		<meta name="og:url" content="url" />
+		<meta name="og:description" content="A website" />
+		<style>
+			:root,
+			:root.dark {
+				--color-primary: #00ff00;
+				--color-bg: #202020;
+			}
+			/*##########################################*/
+			/* Must keep the rules in this block in sync*/
+			@media (prefers-color-scheme: light) {
+				:root {
+					--color-bg: #e0e0e0;
+				}
+			}
+			:root.light {
+				--color-bg: #e0e0e0;
+			}
+			/*##########################################*/
+
+			html,
+			body {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 100%;
+				width: 100%;
+				padding: 0;
+				margin: 0;
+				background-color: var(--color-bg);
+			}
+			svg {
+				fill: var(--color-primary);
+				stroke: var(--color-bg);
+				clip-rule: evenodd;
+				fill-rule: evenodd;
+				height: 60vh;
+				width: 60vh;
+			}
+			@media screen and (orientation: portrait) {
+				svg {
+					height: 60vw;
+					width: 60vw;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<svg viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path
+				d="M64 19C39.1472 19 19 39.1472 19 64C19 88.8528 39.1472 109 64 109C88.8528 109 109 88.8528 109 64C109 39.1472 88.8528 19 64 19ZM9 64C9 33.6243 33.6243 9 64 9C94.3757 9 119 33.6243 119 64C119 94.3757 94.3757 119 64 119C33.6243 119 9 94.3757 9 64Z"
+			/>
+			<path
+				d="M86.8611 67.2624H78V57H95.1636L99.753 64.4259L68.966 126H59.7871L29 64.4259L33.5895 57H50.5V67.2624H41.8919L64.3765 112.232L86.8611 67.2624Z"
+				stroke-linejoin="bevel"
+			/>
+		</svg>
+	</body>
+</html>
