@@ -7,9 +7,11 @@
 		dmsStr = dmsStr.replace(/°|'/g, ",");
 		// Split DMS string into parts
 		let parts = dmsStr.split(",").map(part => parseFloat(part));
+		console.log(parts)
 		let [d, m, s] = parts;
 		// Convert DMS to Decimal Degrees
 		let dd = d + (m / 60) + (s / 3600);
+		console.log(dd)
 		return dd.toFixed(6);
 	}
 	// const pattern = /(\S+)/g
