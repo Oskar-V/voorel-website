@@ -1,0 +1,63 @@
+:root,
+:root.dark {
+  --color-primary: #e0e0e0;
+  --color-bg: #202020;
+}
+/*##########################################*/
+/* Must keep the rules in this block in sync*/
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-primary: #202020;
+    --color-bg: #e0e0e0;
+  }
+}
+:root.light {
+  --color-primary: #202020;
+  --color-bg: #e0e0e0;
+}
+/*##########################################*/
+
+html,
+body {
+  scroll-behavior: smooth;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+}
+
+[name="profile-pic"] {
+  margin-top: 15vh;
+  height: 30vh;
+  width: 30vh;
+  border-radius: 25%;
+  overflow: hidden;
+}
+
+nav {
+  position: fixed;
+  bottom: 0;
+  padding-bottom: 1vh;
+  display: flex;
+}
+
+nav svg {
+  height: 2em;
+  width: 2em;
+  fill: var(--color-primary);
+  opacity: 0.7;
+  cursor: pointer;
+  margin: 0 10px;
+}
+nav svg:active,
+nav svg:focus,
+nav svg:hover {
+  opacity: 1;
+}
