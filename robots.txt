@@ -1,0 +1,1 @@
+sitemap: https://voorel.com/sitemap.xml
