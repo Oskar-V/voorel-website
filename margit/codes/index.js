@@ -35,7 +35,8 @@ function processFile() {
 const processContent = (incoming_data) => {
 	console.log('Processing file');
 	// Filter out the header content:
-	incoming_data = incoming_data.split("Product,Google Ads\n\n")[1]
+	if (incoming_data.split("Product,Google Ads\n\n").length > 1)
+		incoming_data = incoming_data.split("Product,Google Ads\n\n")[1];
 	// Generate csv collection
 	let data = parseCsv(incoming_data.trim());
 	const new_headers = ['Account ID', 'Amount', 'Invalid activity', 'Account', 'Description', 'Primary code', 'Codes'];
