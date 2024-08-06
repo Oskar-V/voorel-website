@@ -36,10 +36,10 @@ const processContent = (incoming_data) => {
 	console.log('Processing file');
 	// Filter out the header content:
 	if (incoming_data.split("Product,Google Ads\n\n").length > 1)
-		incoming_data = incoming_data.split("Product,Google Ads\n\n")[1];
+		incoming_data = incoming_data.split("Product,Google Ads")[1];
 	// Generate csv collection
 	let data = parseCsv(incoming_data.trim());
-	const new_headers = ['Account ID', 'Amount', 'Invalid activity', 'Account', 'Primary code', 'Codes'];
+	const new_headers = ['Original', 'Amount', 'Invalid activity', 'Account', 'Primary code', 'Codes'];
 	// Just keep overwriting the original array - should probably change to mutating the input array instead to save on device memory
 	data = findInvalidActivity(data);
 	data = findCodes(data, PRIMARY_CODE_PATTERN, 'Primary code');
@@ -66,8 +66,9 @@ const findCodes = (data, pattern, column) =>
 
 const parseCsv = (csvText) => {
 	const rows = csvText.split('\n');
-	const first_pass = rows.map(row => {
-		const columns = [];
+	const first_pass = rows.map((row) => {
+		row = row.trim();
+		const columns = [row];
 		let inQuotes = false;
 		let value = '';
 
@@ -91,6 +92,7 @@ const parseCsv = (csvText) => {
 		return columns;
 	});
 	const headers = first_pass.shift();
+	headers[0] = 'Original';
 	console.log("Original headers:\n", headers);
 	const second_pass = first_pass.map(e => {
 		let i = 0;
@@ -102,8 +104,14 @@ const parseCsv = (csvText) => {
 	})
 }
 
-function createCsvFile(data) {
+const createCsvFile = (data) => {
 	console.log("Generating output file");
+	const headers = data[0]
+	const missing_headers = findLongestRow(data) - headers.length;
+	if (missing_headers > 0) {
+		// Need to stretch out the headers
+		data[0].push(...Array.from({ length: missing_headers }, () => headers[headers.length - 1]))
+	}
 	const csvContent = data.map(row =>
 		row.map(value =>
 			typeof value === 'string' && value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value
@@ -114,3 +122,6 @@ function createCsvFile(data) {
 	return new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 }
 
+const findLongestRow = (data) => data.reduce((acc, row) =>
+	Math.max(acc, row.flat().length)
+	, 0)
