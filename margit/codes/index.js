@@ -39,7 +39,7 @@ const processContent = (incoming_data) => {
 		incoming_data = incoming_data.split("Product,Google Ads\n\n")[1];
 	// Generate csv collection
 	let data = parseCsv(incoming_data.trim());
-	const new_headers = ['Account ID', 'Amount', 'Invalid activity', 'Account', 'Description', 'Primary code', 'Codes'];
+	const new_headers = ['Account ID', 'Amount', 'Invalid activity', 'Account', 'Primary code', 'Codes'];
 	// Just keep overwriting the original array - should probably change to mutating the input array instead to save on device memory
 	data = findInvalidActivity(data);
 	data = findCodes(data, PRIMARY_CODE_PATTERN, 'Primary code');
