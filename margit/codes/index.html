@@ -11,41 +11,56 @@
 
 <body>
 	<div id="interaction">
-		<!-- <div>
-			<p>Don't change anything here unless you know what you're doing.</p>
-			<input id="primary-code-pattern" name="primary-code-pattern" />
-			<label for="primary-code-pattern">Primary code detection regex pattern</label>
-			<br><br>
-			<input id="secondary-code-pattern" name="secondary-code-pattern" />
-			<label for="secondary-code-pattern">Secondary code detection regex pattern</label>
-		</div> -->
 		<div>
 			<input type="file" id="file-input" accept=".csv" multiple="multiple">
 			<br><br>
-			<button id="process-files-button">Process Files</button>
+			<!-- <button id="process-files-button">Process Files</button> -->
 			<br><br>
 		</div>
 		<div id="download-links"></div>
 	</div>
 	<div id="instructions">
-		<ol>
-			<h2>Instructions</h2>
-			<li>Drop your <code>.csv</code> file(s) anywhere on the page or use the <code>Choose Files</code> button</li>
-			<li>Press <code>Process Files</code> button</li>
-			<li>Click on the files you wish to download</li>
-		</ol>
-		<ul>
-			<h2>Rules for the input files</h2>
-			<li><strong>Must</strong> be a valid <code>.csv</code> file</li>
-			<li><strong>Must</strong> use the "<code>,</code>" (comma) character as a delimiter</li>
-			<li><strong>Must</strong> have a header row with at least the following columns</li>
-			<ul>
-				<li>Description</li>
-				<li>Amount</li>
-				<li>Account</li>
-			</ul>
-		</ul>
-	</div>
+		<div>
+			<div>
+				<h2>Instructions</h2>
+				<ol>
+					<li>Drop your <code>.csv</code> file(s) anywhere on the page or use the <code>Choose Files</code> button</li>
+					<li><i>Files are now processed automatically</i></li>
+					<li>Click on the files you wish to download</li>
+				</ol>
+			</div>
+			<div>
+				<h2>Rules for the input files</h2>
+				<ul>
+					<li><strong>Must</strong> be a valid <code>.csv</code> file</li>
+					<li><strong>Must</strong> use the correct delimiter character as specified in the settings</li>
+					<li><strong>Must</strong> have a header row with at least the following columns</li>
+					<ul>
+						<li>Description</li>
+						<li>Amount</li>
+						<li>Account</li>
+					</ul>
+				</ul>
+			</div>
+			<div>
+				<h2>Settings</h2>
+				<p><i>Don't change anything here unless you know what you're doing.</i></p>
+				<label for="incoming-delimiter-character">Delimiter character used by <strong>incoming</strong> files
+					<i>(Character used to separate columns)</i></label>
+				<input id="incoming-delimiter-character" name="incoming-delimiter-character" value="," maxlength="1">
+				<br><br>
+				<!-- <label for="primary-code-pattern"><strong>Primary code</strong> detection regex pattern</label>
+				<input id="primary-code-pattern" name="primary-code-pattern" />
+				<br><br>
+				<label for="secondary-code-pattern"><strong>Secondary code</strong> detection regex pattern</label>
+				<input id="secondary-code-pattern" name="secondary-code-pattern" />
+				<br><br> -->
+				<label for="outgoing-delimiter-character">Delimiter character to use for <strong>generated</strong> files
+					<i>(Character used to separate columns)</i></label>
+				<input id="outgoing-delimiter-character" name="outgoing-delimiter-character" value=";" maxlength="1">
+				<br><br>
+			</div>
+		</div>
 </body>
 
 </html>

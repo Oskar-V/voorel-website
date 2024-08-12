@@ -1,4 +1,5 @@
-document.getElementById('process-files-button').addEventListener('click', processFiles);
+// document.getElementById('process-files-button').addEventListener('click', processFiles);
+document.getElementById('file-input').addEventListener('change', processFiles);
 
 const PRIMARY_CODE_PATTERN = /(?:[^\w]|^|_\/)([A-Z]{3}\d{3})(?=[^\w]|$|_)/g;
 const SECONDARY_CODE_PATTERN = /(?:[^\w]|^|_|\/)([A-Z]{4}\d{2,3}|[A-Z]{2}\d{6}|[A-Z]{2}\d{4})(?=[^\w]|$|_)/g;
@@ -46,6 +47,7 @@ document.addEventListener('drop', (ev) => {
 
 	// Update the file input with the new file list
 	fileInput.files = dataTransfer.files;
+	processFiles();
 });
 
 document.addEventListener('dragover', (ev) => {
@@ -128,9 +130,15 @@ const findCodes = (data, pattern, column) =>
 	})
 
 const parseCsv = (csvText) => {
+	const delimiter_character = document.getElementById('incoming-delimiter-character').value || ",";
 	const rows = csvText.split('\n');
 	const first_pass = rows.map((row) => {
 		row = row.trim();
+		// Fix for a very specific use case - need to figure out a more robust solution for it
+		if (row[0] === "\"" && row[row.length - 1] === "\"") {
+			row = row.substring(1, row.length - 1);
+			// row = row.replace('""', '"');
+		}
 		const columns = [row];
 		let inQuotes = false;
 		let value = '';
@@ -144,7 +152,7 @@ const parseCsv = (csvText) => {
 				i++;
 			} else if (char === '"') {
 				inQuotes = !inQuotes;
-			} else if (char === ',' && !inQuotes) {
+			} else if (char === delimiter_character && !inQuotes) {
 				columns.push(value);
 				value = '';
 			} else {
@@ -169,16 +177,17 @@ const parseCsv = (csvText) => {
 
 const createCsvFile = (data) => {
 	console.log("Generating output file");
-	const headers = data[0]
+	const headers = data[0];
 	const missing_headers = findLongestRow(data) - headers.length;
 	if (missing_headers > 0) {
 		// Need to stretch out the headers
 		data[0].push(...Array.from({ length: missing_headers }, () => headers[headers.length - 1]))
 	}
+	const delimiter_character = document.getElementById('outgoing-delimiter-character').value || ','
 	const csvContent = data.map(row =>
 		row.map(value =>
 			typeof value === 'string' && value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value
-		).join(',')
+		).join(delimiter_character)
 	).join('\n');
 
 	// Create a Blob from the CSV content
