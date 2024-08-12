@@ -1,4 +1,4 @@
-// document.getElementById('process-files-button').addEventListener('click', processFiles);
+document.getElementById('process-files-button').addEventListener('click', processFiles);
 document.getElementById('file-input').addEventListener('change', processFiles);
 
 const PRIMARY_CODE_PATTERN = /(?:[^\w]|^|_\/)([A-Z]{3}\d{3})(?=[^\w]|$|_)/g;
@@ -185,8 +185,14 @@ const createCsvFile = (data) => {
 	}
 	const delimiter_character = document.getElementById('outgoing-delimiter-character').value || ','
 	const csvContent = data.map(row =>
-		row.map(value =>
-			typeof value === 'string' && value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value
+		row.map(value => {
+			if (typeof value === 'string' && value.includes(','))
+				return `"${value.replace(/"/g, '""')}"`
+			if (typeof value === 'object' && typeof value.join === 'function')
+				return value.join(delimiter_character);
+			return value;
+			// return typeof value === 'string' && value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value
+		}
 		).join(delimiter_character)
 	).join('\n');
 
