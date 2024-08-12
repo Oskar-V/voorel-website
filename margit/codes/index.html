@@ -6,15 +6,46 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Code finder</title>
 	<script defer src="index.js"></script>
+	<link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-	<h1>Code finder</h1>
-	<input type="file" id="fileInput">
-	<br><br>
-	<button id="processFileButton">Process File</button>
-	<br><br>
-	<a id="downloadLink" style="display:none;">Download Processed File</a>
+	<div id="interaction">
+		<!-- <div>
+			<p>Don't change anything here unless you know what you're doing.</p>
+			<input id="primary-code-pattern" name="primary-code-pattern" />
+			<label for="primary-code-pattern">Primary code detection regex pattern</label>
+			<br><br>
+			<input id="secondary-code-pattern" name="secondary-code-pattern" />
+			<label for="secondary-code-pattern">Secondary code detection regex pattern</label>
+		</div> -->
+		<div>
+			<input type="file" id="file-input" accept=".csv" multiple="multiple">
+			<br><br>
+			<button id="process-files-button">Process Files</button>
+			<br><br>
+		</div>
+		<div id="download-links"></div>
+	</div>
+	<div id="instructions">
+		<ol>
+			<h2>Instructions</h2>
+			<li>Drop your <code>.csv</code> file(s) anywhere on the page or use the <code>Choose Files</code> button</li>
+			<li>Press <code>Process Files</code> button</li>
+			<li>Click on the files you wish to download</li>
+		</ol>
+		<ul>
+			<h2>Rules for the input files</h2>
+			<li><strong>Must</strong> be a valid <code>.csv</code> file</li>
+			<li><strong>Must</strong> use the "<code>,</code>" (comma) character as a delimiter</li>
+			<li><strong>Must</strong> have a header row with at least the following columns</li>
+			<ul>
+				<li>Description</li>
+				<li>Amount</li>
+				<li>Account</li>
+			</ul>
+		</ul>
+	</div>
 </body>
 
 </html>
