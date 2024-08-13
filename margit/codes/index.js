@@ -51,8 +51,6 @@ document.addEventListener('drop', (ev) => {
 });
 
 document.addEventListener('dragover', (ev) => {
-	console.log("Ready to accept the file");
-
 	// Prevent default behavior (Prevent file from being opened)
 	ev.preventDefault();
 });
@@ -75,9 +73,11 @@ function processFiles() {
 			const fileContent = event.target.result;
 			// Perform any processing on the file content here
 			try {
+				console.log(`Processing ${file.name}`);
 				const processedContent = processContent(fileContent);
 
 				// Create a new Blob for the processed content
+				console.log(`Generating processed_${file.name}`);
 				const blob = createCsvFile(processedContent);
 				const url = URL.createObjectURL(blob);
 
@@ -98,14 +98,15 @@ function processFiles() {
 };
 
 const processContent = (incoming_data) => {
-	console.log('Processing file');
 	// Filter out the header content:
-	if (incoming_data.split("Product,Google Ads\n\n").length > 1)
+	if (incoming_data.split("Product,Google Ads").length > 1)
 		incoming_data = incoming_data.split("Product,Google Ads")[1];
 	// Generate csv collection
 	let data = parseCsv(incoming_data.trim());
 	const new_headers = ['Original', 'Amount', 'Invalid activity', 'Account', 'Primary code', 'Codes'];
-	// Just keep overwriting the original array - should probably change to mutating the input array instead to save on device memory
+	// Just keep overwriting the original array
+	// should probably change to mutating the input array instead to save on device memory
+	// if the incoming file row count gets too big
 	data = findInvalidActivity(data);
 	data = findCodes(data, PRIMARY_CODE_PATTERN, 'Primary code');
 	data = findCodes(data, SECONDARY_CODE_PATTERN, 'Codes');
@@ -132,13 +133,14 @@ const findCodes = (data, pattern, column) =>
 const parseCsv = (csvText) => {
 	const delimiter_character = document.getElementById('incoming-delimiter-character').value || ",";
 	const rows = csvText.split('\n');
-	const first_pass = rows.map((row) => {
+	const first_pass = rows.filter(row => row.length).map((row) => {
+		// Preprocess
 		row = row.trim();
-		// Fix for a very specific use case - need to figure out a more robust solution for it
-		if (row[0] === "\"" && row[row.length - 1] === "\"") {
+		if (row.startsWith('"') && row.endsWith('"')) {
+			// Remove the first and last characters
 			row = row.substring(1, row.length - 1);
-			// row = row.replace('""', '"');
 		}
+		row = row.replaceAll('""', '"');
 		const columns = [row];
 		let inQuotes = false;
 		let value = '';
@@ -147,19 +149,19 @@ const parseCsv = (csvText) => {
 			const char = row[i];
 			const nextChar = row[i + 1];
 
-			if (char === '"' && inQuotes && nextChar === '"') {
+			if (char === '"' && nextChar === '"') {
 				value += '"';
-				i++;
+				i++; // Skip the next character
 			} else if (char === '"') {
-				inQuotes = !inQuotes;
+				inQuotes = !inQuotes; // Toggle the inQuotes flag
 			} else if (char === delimiter_character && !inQuotes) {
-				columns.push(value);
+				columns.push(value.trim());
 				value = '';
 			} else {
 				value += char;
 			}
 		}
-		columns.push(value); // Push the last value
+		columns.push(value.trim()); // Push the last value
 		return columns;
 	});
 	const headers = first_pass.shift();
@@ -176,7 +178,6 @@ const parseCsv = (csvText) => {
 }
 
 const createCsvFile = (data) => {
-	console.log("Generating output file");
 	const headers = data[0];
 	const missing_headers = findLongestRow(data) - headers.length;
 	if (missing_headers > 0) {
