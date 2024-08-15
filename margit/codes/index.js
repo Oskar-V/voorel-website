@@ -2,13 +2,7 @@ document.getElementById('process-files-button').addEventListener('click', proces
 document.getElementById('file-input').addEventListener('change', processFiles);
 
 const PRIMARY_CODE_PATTERN = /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{3})(?=[^A-Za-z\d]|$)/g;
-const SECONDARY_CODE_PATTERN = /(?:[^A-Za-z\d]|^)([A-Z]{4}\d{2,3}|[A-Z]{2}\d{4}|[A-Z]{2}\d{6})(?=[^A-Za-z\d]|$)/g;
-
-// const primary_code_pattern_input = document.getElementById('primary-code-pattern');
-// const secondary_code_pattern_input = document.getElementById('secondary-code-pattern');
-
-// primary_code_pattern_input.value = PRIMARY_CODE_PATTERN;
-// secondary_code_pattern_input.value = SECONDARY_CODE_PATTERN;
+const SECONDARY_CODE_PATTERN = /(?:[^A-Za-z\d]|^)([A-Z]{4,5}\d{2,3}|[A-Z]{2}\d{3,6})(?=[^A-Za-z\d]|$)/g;
 
 document.addEventListener('drop', (ev) => {
 	const fileInput = document.getElementById('file-input');
@@ -192,13 +186,12 @@ const createCsvFile = (data) => {
 			if (typeof value === 'object' && typeof value.join === 'function')
 				return value.join(delimiter_character);
 			return value;
-			// return typeof value === 'string' && value.includes(',') ? `"${value.replace(/"/g, '""')}"` : value
 		}
 		).join(delimiter_character)
 	).join('\n');
 
 	// Create a Blob from the CSV content
-	return new Blob([csvContent], { type: 'text/csv;charset=utf-8', encoding:'utf-8' });
+	return new Blob([csvContent], { type: 'text/csv;charset=utf-8', encoding: 'utf-8' });
 }
 
 const findLongestRow = (data) => data.reduce((acc, row) =>
