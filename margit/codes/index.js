@@ -182,10 +182,10 @@ const createCsvFile = (data) => {
 	const csvContent = data.map(row =>
 		row.map(value => {
 			if (typeof value === 'string' && value.includes(','))
-				return `"${value.replace(/"/g, '""')}"`
+				return decodeURI(encodeURI(`"${value.replace(/"/g, '""')}"`));
 			if (typeof value === 'object' && typeof value.join === 'function')
-				return value.join(delimiter_character);
-			return value;
+				return decodeURI(encodeURI(value.join(delimiter_character)));
+			return decodeURI(encodeURI(value));
 		}
 		).join(delimiter_character)
 	).join('\n');
