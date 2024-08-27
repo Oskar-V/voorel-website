@@ -2,12 +2,12 @@ document.getElementById('process-files-button').addEventListener('click', proces
 document.getElementById('file-input').addEventListener('change', processFiles);
 
 const patterns = {
-	"Project 1": /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Project 2": /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{4})(?=[^A-Za-z\d]|$)/g,
-	"Project 3": /(?:[^A-Za-z\d]|^)([A-Z]{2}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Project 4": /(?:[^A-Za-z\d]|^)([A-Z]{2}[\d]{4})(?=[^A-Za-z\d]|$)/g,
-	"Project 5": /(?:[^A-Za-z\d]|^)([A-Z]{5}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Project 6": /(?:[^A-Za-z\d]|^)([A-Z]{4}[\d]{3})(?=[^A-Za-z\d]|$)/g
+	"Projekt 1": /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 2": /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{4})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 3": /(?:[^A-Za-z\d]|^)([A-Z]{2}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 4": /(?:[^A-Za-z\d]|^)([A-Z]{2}[\d]{4})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 5": /(?:[^A-Za-z\d]|^)([A-Z]{5}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 6": /(?:[^A-Za-z\d]|^)([A-Z]{4}[\d]{3})(?=[^A-Za-z\d]|$)/g
 }
 
 /**
@@ -89,6 +89,7 @@ function processFiles() {
 				const processedContent = processContent(fileContent);
 
 				// Create a new Blob for the processed content
+				console.log(processedContent);
 				console.log(`Generating processed_${file.name}`);
 				const blob = createCsvFile(processedContent);
 				const url = URL.createObjectURL(blob);
