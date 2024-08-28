@@ -112,7 +112,6 @@ function processFiles() {
 const processContent = (incoming_data) => {
 	// Generate csv collection
 	let { headers, data } = parseCsv(incoming_data.trim());
-	// const new_headers = ['Original', 'Amount', 'Invalid activity', 'Account', 'Primary code', 'Codes'];
 	// Just keep overwriting the original array
 	// should probably change to mutating the input array instead to save on device memory
 	// if the incoming file row count gets too big
@@ -159,24 +158,8 @@ const parseCsv = (csvText) => {
 }
 
 const createCsvFile = (data) => {
-	const headers = data[0];
-	// const missing_headers = findLongestRow(data) - headers.length;
-	// if (missing_headers > 0) {
-	// 	// Need to stretch out the headers
-	// 	data[0].push(...Array.from({ length: missing_headers }, () => headers[headers.length - 1]))
-	// }
 	const delimiter_character = document.getElementById('outgoing-delimiter-character').value || ',';
 	const csvContent = stringify(data, { delimiter: delimiter_character })
-	// const csvContent = data.map(row =>
-	// 	row.map(value => {
-	// 		if (typeof value === 'string' && value.includes(','))
-	// 			return decodeURI(encodeURI(`"${value.replace(/"/g, '""')}"`));
-	// 		if (typeof value === 'object' && typeof value.join === 'function')
-	// 			return decodeURI(encodeURI(value.join(delimiter_character)));
-	// 		return decodeURI(encodeURI(value));
-	// 	}
-	// 	).join(delimiter_character)
-	// ).join('\n');
 
 	// Create a Blob from the CSV content
 	console.log(csvContent)
