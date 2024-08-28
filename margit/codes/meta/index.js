@@ -89,7 +89,6 @@ function processFiles() {
 				const processedContent = processContent(fileContent);
 
 				// Create a new Blob for the processed content
-				console.log(processedContent);
 				console.log(`Generating processed_${file.name}`);
 				const blob = createCsvFile(processedContent);
 				const url = URL.createObjectURL(blob);
@@ -120,6 +119,13 @@ const processContent = (incoming_data) => {
 	for (let [key, value] of Object.entries(patterns)) {
 		data = findCode(data, value, key);
 	}
+	data = data.map((i) => {
+		try {
+			i['Amount spent'] = i['Amount spent'].replace(',', '').replace('.', ',');
+		} finally {
+			return i;
+		}
+	}, [])
 
 	// Map each value to their correct column
 	const final_data = data.map(row => headers.map(val => row[val] ?? ""));
@@ -154,24 +160,26 @@ const parseCsv = (csvText) => {
 
 const createCsvFile = (data) => {
 	const headers = data[0];
-	const missing_headers = findLongestRow(data) - headers.length;
-	if (missing_headers > 0) {
-		// Need to stretch out the headers
-		data[0].push(...Array.from({ length: missing_headers }, () => headers[headers.length - 1]))
-	}
-	const delimiter_character = document.getElementById('outgoing-delimiter-character').value || ','
-	const csvContent = data.map(row =>
-		row.map(value => {
-			if (typeof value === 'string' && value.includes(','))
-				return decodeURI(encodeURI(`"${value.replace(/"/g, '""')}"`));
-			if (typeof value === 'object' && typeof value.join === 'function')
-				return decodeURI(encodeURI(value.join(delimiter_character)));
-			return decodeURI(encodeURI(value));
-		}
-		).join(delimiter_character)
-	).join('\n');
+	// const missing_headers = findLongestRow(data) - headers.length;
+	// if (missing_headers > 0) {
+	// 	// Need to stretch out the headers
+	// 	data[0].push(...Array.from({ length: missing_headers }, () => headers[headers.length - 1]))
+	// }
+	const delimiter_character = document.getElementById('outgoing-delimiter-character').value || ',';
+	const csvContent = stringify(data, { delimiter: delimiter_character })
+	// const csvContent = data.map(row =>
+	// 	row.map(value => {
+	// 		if (typeof value === 'string' && value.includes(','))
+	// 			return decodeURI(encodeURI(`"${value.replace(/"/g, '""')}"`));
+	// 		if (typeof value === 'object' && typeof value.join === 'function')
+	// 			return decodeURI(encodeURI(value.join(delimiter_character)));
+	// 		return decodeURI(encodeURI(value));
+	// 	}
+	// 	).join(delimiter_character)
+	// ).join('\n');
 
 	// Create a Blob from the CSV content
+	console.log(csvContent)
 	return new Blob([csvContent], { type: 'text/csv;charset=utf-8', encoding: 'utf-8' });
 }
 
