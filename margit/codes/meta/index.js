@@ -2,12 +2,12 @@ document.getElementById('process-files-button').addEventListener('click', proces
 document.getElementById('file-input').addEventListener('change', processFiles);
 
 const patterns = {
-	"Projekt 1": /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Projekt 2": /(?:[^A-Za-z\d]|^)([A-Z]{3}[\d]{4})(?=[^A-Za-z\d]|$)/g,
-	"Projekt 3": /(?:[^A-Za-z\d]|^)([A-Z]{2}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Projekt 4": /(?:[^A-Za-z\d]|^)([A-Z]{2}[\d]{4})(?=[^A-Za-z\d]|$)/g,
-	"Projekt 5": /(?:[^A-Za-z\d]|^)([A-Z]{5}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Projekt 6": /(?:[^A-Za-z\d]|^)([A-Z]{4}[\d]{3})(?=[^A-Za-z\d]|$)/g
+	"Projekt 1": /(?:[^A-Za-z\d]|^)([A-Za-z]{3}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 2": /(?:[^A-Za-z\d]|^)([A-Za-z]{3}[\d]{4})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 3": /(?:[^A-Za-z\d]|^)([A-Za-z]{2}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 4": /(?:[^A-Za-z\d]|^)([A-Za-z]{2}[\d]{4})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 5": /(?:[^A-Za-z\d]|^)([A-Za-z]{5}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 6": /(?:[^A-Za-z\d]|^)([A-Za-z]{4}[\d]{3})(?=[^A-Za-z\d]|$)/g
 }
 
 /**
@@ -110,6 +110,14 @@ function processFiles() {
 };
 
 const processContent = (incoming_data) => {
+	// Detect and separate a header metadata block from beginning of file
+	if (incoming_data.split("\n\n\n").length > 1)
+		incoming_data = incoming_data.split("\n\n\n")[1];
+
+	// Detect an separate bank info metadata block from end of file
+	if (incoming_data.split("Bank account details(EUR)").length > 1)
+		incoming_data = incoming_data.split("Bank account details(EUR)")[0];
+
 	// Generate csv collection
 	let { headers, data } = parseCsv(incoming_data.trim());
 	// Just keep overwriting the original array
@@ -118,13 +126,13 @@ const processContent = (incoming_data) => {
 	for (let [key, value] of Object.entries(patterns)) {
 		data = findCode(data, value, key);
 	}
-	data = data.map((i) => {
-		try {
-			i['Amount spent'] = i['Amount spent'].replace(',', '').replace('.', ',');
-		} finally {
-			return i;
-		}
-	}, [])
+	// data = data.map((i) => {
+	// 	try {
+	// 		i['Amount spent'] = i['Amount spent'].replace(',', '').replace('.', ',');
+	// 	} finally {
+	// 		return i;
+	// 	}
+	// }, [])
 
 	// Map each value to their correct column
 	const final_data = data.map(row => headers.map(val => row[val] ?? ""));
@@ -143,18 +151,12 @@ const findCode = (data, pattern, column) =>
 		return row;
 	})
 
-const parseCsv = (csvText) => {
+const parseCsv = (csv_text) => {
 	const delimiter_character = document.getElementById('incoming-delimiter-character').value || ",";
-	const first_pass = parse(csvText, { delimiter: delimiter_character });
-	const headers = [...first_pass.shift(), "", ...Array.from({ length: 6 }, (k, v) => `Projekt ${v + 1}`)];
-	// Map the array to object for each value
-	return {
-		headers,
-		data: first_pass.map(e => {
-			let i = 0;
-			return e.reduce((acc, val) => ({ ...acc, [headers[i++]]: val }), {})
-		})
-	}
+
+	const first_pass = Papa.parse(csv_text, { delimiter: delimiter_character, header: true });
+
+	return { headers: [...first_pass.meta.fields, ...Array.from({ length: 6 }, (_, v) => `Projekt ${v + 1}`)], data: first_pass.data }
 }
 
 const createCsvFile = (data) => {
@@ -162,10 +164,5 @@ const createCsvFile = (data) => {
 	const csvContent = stringify(data, { delimiter: delimiter_character })
 
 	// Create a Blob from the CSV content
-	console.log(csvContent)
 	return new Blob([csvContent], { type: 'text/csv;charset=utf-8', encoding: 'utf-8' });
 }
-
-const findLongestRow = (data) => data.reduce((acc, row) =>
-	Math.max(acc, row.flat().length)
-	, 0)
