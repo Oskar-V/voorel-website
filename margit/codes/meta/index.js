@@ -130,7 +130,7 @@ const processContent = (incoming_data) => {
 	data = data.map((i) => {
 		for (const val of numeric_values) {
 			try {
-				i[val] = i[val].replace(',', '');
+				i[val] = i[val].replace(',', '').replace('.', ',');
 			} catch {
 				console.error(`Failed to convert value for: ${val}`)
 			}
