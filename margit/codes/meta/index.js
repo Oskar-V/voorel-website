@@ -20,7 +20,7 @@ const patterns = {
  * 4 + 3
  */
 
-const numeric_values = ['Invoice net amount','Invoice amount total', 'Amount due', 'Campaign amount', 'Campaign total amount']
+const numeric_values = ['Invoice net amount', 'Invoice total amount', 'Amount due', 'Campaign amount', 'Campaign total amount']
 
 document.addEventListener('drop', (ev) => {
 	const fileInput = document.getElementById('file-input');
@@ -130,9 +130,12 @@ const processContent = (incoming_data) => {
 	data = data.map((i) => {
 		for (const val of numeric_values) {
 			try {
-				i[val] = i[val].replace(',', '').replace('.', ',');
-			} catch { }
+				i[val] = i[val].replace(',', '');
+			} catch {
+				console.error(`Failed to convert value for: ${val}`)
+			}
 		}
+		return i
 	}, [])
 
 	// Map each value to their correct column
