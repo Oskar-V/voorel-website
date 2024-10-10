@@ -20,6 +20,7 @@ const patterns = {
  * 4 + 3
  */
 
+const numeric_values = ['Invoice net amount','Invoice amount total', 'Amount due', 'Campaign amount', 'Campaign total amount']
 
 document.addEventListener('drop', (ev) => {
 	const fileInput = document.getElementById('file-input');
@@ -126,13 +127,13 @@ const processContent = (incoming_data) => {
 	for (let [key, value] of Object.entries(patterns)) {
 		data = findCode(data, value, key);
 	}
-	// data = data.map((i) => {
-	// 	try {
-	// 		i['Amount spent'] = i['Amount spent'].replace(',', '').replace('.', ',');
-	// 	} finally {
-	// 		return i;
-	// 	}
-	// }, [])
+	data = data.map((i) => {
+		for (const val of numeric_values) {
+			try {
+				i[val] = i[val].replace(',', '').replace('.', ',');
+			} catch { }
+		}
+	}, [])
 
 	// Map each value to their correct column
 	const final_data = data.map(row => headers.map(val => row[val] ?? ""));
