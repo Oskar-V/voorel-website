@@ -2,15 +2,16 @@ document.getElementById('process-files-button').addEventListener('click', proces
 document.getElementById('file-input').addEventListener('change', processFiles);
 
 const PRIMARY_CODE_PATTERN = /(?:[^A-Za-z\d]|^)([A-Za-z]{3}[\d]{3})(?=[^A-Za-z\d]|$)/g;
-const SECONDARY_CODE_PATTERN = /(?:[^A-Za-z\d]|^)([A-Za-z]{4}\d{2,3}|[A-Za-z]{2}\d{4}|[A-Za-z]{3}\d{4})(?=[^A-Za-z\d]|$)/g;
+const SECONDARY_CODE_PATTERN = /(?:[^A-Za-z\d]|^)([A-Za-z]{4,5}\d{3}|[A-Za-z]{2}\d{3,4}|[A-Za-z]{3}\d{4})(?=[^A-Za-z\d]|$)/g;
 
 /**
  * Primary format:
  * 3 + 3
  * 
  * Secondary formats:
- * 4 + 2
  * 4 + 3
+ * 5 + 3
+ * 2 + 3
  * 2 + 4
  * 3 + 4
  */

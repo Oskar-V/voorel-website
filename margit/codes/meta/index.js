@@ -12,12 +12,12 @@ const patterns = {
 
 /**
  * Codes
- * 3 + 3
- * 3 + 4
- * 2 + 3
- * 2 + 4
- * 5 + 4
- * 4 + 3
+ * Project 1: 3 + 3
+ * Project 2: 3 + 4
+ * Project 3: 2 + 3
+ * Project 4: 2 + 4
+ * Project 5: 5 + 3
+ * Project 6: 4 + 3
  */
 
 const numeric_values = ['Invoice net amount', 'Invoice total amount', 'Amount due', 'Campaign amount', 'Campaign total amount']
