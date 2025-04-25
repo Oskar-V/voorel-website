@@ -29,22 +29,25 @@ function updateTransforms() {
 		path.setAttribute('transform', `translate(${tx.toFixed(2)},${ty.toFixed(2)}) rotate(${rot.toFixed(2)})`);
 	});
 
+	if (progress < 1) {
+		requestAnimationFrame(updateTransforms);
+	}
+}
+
+function updateCountdownText() {
+	const now = new Date();
 	const timeLeftMs = Math.max(target_date - now, 0);
 	const daysLeft = Math.floor(timeLeftMs / (1000 * 60 * 60 * 24));
-	const stepsLeft = Math.ceil(timeLeftMs / (step_increment * 60 * 1000))-1;
+	const stepsLeft = Math.max(0, Math.ceil(timeLeftMs / (step_increment * 60 * 1000)) - 1);
 
 	countdown.innerHTML = `
 		<span>${daysLeft} day${daysLeft !== 1 ? 's' : ''} left 💖</span><br/>
 		<span>or</span><br/>
 		<span>about ${stepsLeft} game${stepsLeft !== 1 ? 's' : ''} of Valorant 🎮</span>
 	`;
-	if (progress < 1) {
-		requestAnimationFrame(updateTransforms);
-	} else {
-		document.querySelectorAll('svg path').forEach(path => {
-			path.setAttribute('transform', `translate(0,0) rotate(0)`);
-		});
-	}
 }
 
+updateCountdownText();
 updateTransforms();
+
+setInterval(updateCountdownText, 60 * 1000);
