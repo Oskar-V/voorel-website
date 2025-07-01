@@ -7,7 +7,8 @@ const patterns = {
 	"Projekt 3": /(?:[^A-Za-z\d]|^)([A-Za-z]{2}[\d]{3})(?=[^A-Za-z\d]|$)/g,
 	"Projekt 4": /(?:[^A-Za-z\d]|^)([A-Za-z]{2}[\d]{4})(?=[^A-Za-z\d]|$)/g,
 	"Projekt 5": /(?:[^A-Za-z\d]|^)([A-Za-z]{5}[\d]{3})(?=[^A-Za-z\d]|$)/g,
-	"Projekt 6": /(?:[^A-Za-z\d]|^)([A-Za-z]{4}[\d]{3})(?=[^A-Za-z\d]|$)/g
+	"Projekt 6": /(?:[^A-Za-z\d]|^)([A-Za-z]{4}[\d]{3})(?=[^A-Za-z\d]|$)/g,
+	"Projekt 7": /(?:[^A-Za-z\d]|^)([A-Za-z]{2}[\d]{6})(?=[^A-Za-z\d]|$)/g,
 }
 
 /**
@@ -18,6 +19,7 @@ const patterns = {
  * Project 4: 2 + 4
  * Project 5: 5 + 3
  * Project 6: 4 + 3
+ * Project 7: 2 + 6
  */
 
 const numeric_values = ['Invoice net amount', 'Invoice total amount', 'Amount due', 'Campaign amount', 'Campaign total amount']
