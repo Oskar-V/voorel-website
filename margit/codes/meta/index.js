@@ -127,6 +127,7 @@ const processContent = (incoming_data) => {
 	// should probably change to mutating the input array instead to save on device memory
 	// if the incoming file row count gets too big
 	for (let [key, value] of Object.entries(patterns)) {
+		console.log(`Looking for ${value} for ${key}`)
 		data = findCode(data, value, key);
 	}
 	data = data.map((i) => {
@@ -162,7 +163,7 @@ const parseCsv = (csv_text) => {
 
 	const first_pass = Papa.parse(csv_text, { delimiter: delimiter_character, header: true });
 
-	return { headers: [...first_pass.meta.fields, ...Array.from({ length: 6 }, (_, v) => `Projekt ${v + 1}`)], data: first_pass.data }
+	return { headers: [...first_pass.meta.fields, ...Array.from({ length: Object.keys(patterns).length}, (_, v) => `Projekt ${v + 1}`)], data: first_pass.data }
 }
 
 const createCsvFile = (data) => {
