@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Image to Text — on-device OCR</title>
+    <meta
+      name="description"
+      content="Take a photo or drop an image and pull the text out of it. Everything runs in your browser; no image is ever uploaded."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#4338ca" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./styles-fe7557d7.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#output">Skip to result</a>
+
+    <header class="app-header">
+      <h1><img class="logo" src="./icons/icon.svg" alt="" width="28" height="28" /> Image&nbsp;to&nbsp;Text</h1>
+      <p class="tagline">Reads text off a picture. Runs entirely on your device.</p>
+    </header>
+
+    <main>
+      <!-- Default on a phone: a live viewfinder, ready to shoot. Hidden on pointer
+           devices and whenever the camera is unavailable or refused. -->
+      <section id="camera" aria-labelledby="camera-heading" hidden>
+        <h2 id="camera-heading" class="sr-only">Camera</h2>
+        <div class="viewfinder-wrap">
+          <video id="viewfinder" playsinline autoplay muted disablepictureinpicture></video>
+          <p class="viewfinder-hint">Fill the frame with text</p>
+          <button type="button" id="btn-torch" class="btn btn-icon torch" hidden aria-pressed="false">
+            <span aria-hidden="true">☀</span><span class="sr-only">Toggle the light</span>
+          </button>
+        </div>
+        <div class="camera-actions">
+          <button type="button" id="btn-shutter" class="shutter" aria-label="Take a photo"></button>
+          <button type="button" id="btn-upload-instead" class="btn btn-quiet">
+            Upload an image instead
+          </button>
+        </div>
+      </section>
+
+      <!-- Source picking: the desktop UI, and the fallback when there is no camera.
+           `capture` sends Android straight to the camera app; on desktop the same
+           input degrades to a normal file dialog. -->
+      <section id="source" aria-labelledby="source-heading" hidden>
+        <h2 id="source-heading" class="sr-only">Choose an image</h2>
+        <div id="dropzone" class="dropzone">
+          <div class="dropzone-inner">
+            <p class="dropzone-icon" aria-hidden="true"></p>
+            <div class="dropzone-actions">
+              <button type="button" id="btn-camera" class="btn btn-primary btn-lg touch-only">
+                Take a photo
+              </button>
+              <button type="button" id="btn-choose" class="btn btn-lg">Choose an image</button>
+            </div>
+            <p class="hint pointer-only">…or drop one here, or paste with <kbd>Ctrl</kbd>+<kbd>V</kbd></p>
+            <p class="hint touch-only">…or pick one from your gallery</p>
+            <button type="button" id="btn-back-to-camera" class="btn btn-quiet" hidden>
+              Back to the camera
+            </button>
+          </div>
+        </div>
+        <p id="camera-note" class="notice" hidden></p>
+        <p id="first-run" class="notice" hidden>
+          The first scan downloads about 4.5&nbsp;MB of OCR engine and language data.
+          After that this app works fully offline.
+        </p>
+      </section>
+
+      <!-- Preview + progress -->
+      <section id="stage" aria-labelledby="stage-heading" hidden>
+        <h2 id="stage-heading" class="sr-only">Image preview</h2>
+        <div class="canvas-wrap">
+          <canvas id="preview" aria-label="Selected image"></canvas>
+          <svg id="overlay" class="overlay" aria-hidden="true" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="stage-actions">
+          <button type="button" id="btn-rotate" class="btn btn-icon" title="Rotate 90°">
+            <span aria-hidden="true">⟳</span><span class="sr-only">Rotate 90 degrees</span>
+          </button>
+          <button type="button" id="btn-rescan" class="btn">Scan again</button>
+          <button type="button" id="btn-reset" class="btn btn-quiet">New image</button>
+        </div>
+        <div id="progress" class="progress" hidden>
+          <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+          <p id="progress-label" class="progress-label" role="status" aria-live="polite">Starting…</p>
+          <button type="button" id="btn-cancel" class="btn btn-quiet btn-sm">Cancel</button>
+        </div>
+      </section>
+
+      <!-- Result -->
+      <section id="output" aria-labelledby="output-heading" hidden>
+        <div class="output-head">
+          <h2 id="output-heading">Text</h2>
+          <p id="stats" class="stats"></p>
+        </div>
+        <textarea
+          id="text"
+          class="text"
+          rows="10"
+          spellcheck="false"
+          autocapitalize="off"
+          aria-label="Recognised text, editable"
+        ></textarea>
+        <div class="output-actions">
+          <button type="button" id="btn-copy" class="btn btn-primary">Copy</button>
+          <button type="button" id="btn-share" class="btn" hidden>Share</button>
+          <button type="button" id="btn-download" class="btn">Save .txt</button>
+          <label class="switch">
+            <input type="checkbox" id="opt-paragraphs" />
+            <span>Join broken lines</span>
+          </label>
+        </div>
+      </section>
+
+      <details id="settings" class="settings">
+        <summary>Settings</summary>
+        <div class="settings-grid">
+          <label for="opt-lang">
+            Language
+            <select id="opt-lang">
+              <option value="eng">English (offline)</option>
+              <option value="deu">German</option>
+              <option value="spa">Spanish</option>
+              <option value="fra">French</option>
+              <option value="ita">Italian</option>
+              <option value="por">Portuguese</option>
+              <option value="nld">Dutch</option>
+              <option value="pol">Polish</option>
+              <option value="swe">Swedish</option>
+              <option value="fin">Finnish</option>
+              <option value="est">Estonian</option>
+              <option value="rus">Russian</option>
+              <option value="ukr">Ukrainian</option>
+              <option value="tur">Turkish</option>
+              <option value="ces">Czech</option>
+              <option value="dan">Danish</option>
+              <option value="nor">Norwegian</option>
+            </select>
+            <small>Languages other than English are downloaded once, then cached.</small>
+          </label>
+
+          <label for="opt-psm">
+            Layout
+            <select id="opt-psm">
+              <option value="3">Automatic (default)</option>
+              <option value="6">One block of text</option>
+              <option value="4">Columns</option>
+              <option value="11">Scattered text (signs, labels)</option>
+              <option value="7">A single line</option>
+            </select>
+            <small>Change this if a receipt, sign or screenshot comes out jumbled.</small>
+          </label>
+
+          <label for="opt-engine">
+            Engine
+            <select id="opt-engine">
+              <option value="auto">Automatic</option>
+              <option value="wasm">On-device (Tesseract)</option>
+              <option value="native" id="opt-engine-native" hidden>Native TextDetector</option>
+            </select>
+            <small id="engine-note">Tesseract runs as WebAssembly in a worker thread.</small>
+          </label>
+
+          <label class="switch switch-block">
+            <input type="checkbox" id="opt-enhance" checked />
+            <span>Clean up photo before scanning<small>Greyscale + contrast. Helps photos, hurts nothing much.</small></span>
+          </label>
+
+          <label class="switch switch-block">
+            <input type="checkbox" id="opt-boxes" checked />
+            <span>Outline detected lines<small>Shows what was actually read.</small></span>
+          </label>
+        </div>
+      </details>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        No uploads, no servers, no accounts — the image never leaves this device.
+        <span id="offline-badge" class="badge" hidden>Offline ready</span>
+      </p>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <noscript>
+      <p class="notice">This app needs JavaScript — the text recognition runs in your browser.</p>
+    </noscript>
+
+    <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
+    <input type="file" id="file-input" accept="image/*" hidden />
+
+    <script type="module" src="./app-pergjqgq.js"></script>
+  </body>
+</html>
